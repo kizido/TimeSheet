@@ -1,37 +1,37 @@
 import { useState, type ChangeEvent } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import type { LoaderFunctionArgs } from "react-router";
-import { requireAuthCookie } from "~/auth";
+import { useNavigate } from "react-router";
+// import type { LoaderFunctionArgs } from "react-router";
+// import { requireAuthCookie } from "~/auth";
+
 
 type MinutesEntry = {
-  date: Date;
+  date: string;
   minutes: number;
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
-    let userId = await requireAuthCookie(request);
-}
+// export async function loader({ request }: LoaderFunctionArgs) {
+//     let userId = await requireAuthCookie(request);
+// }
 
 export default function Sheet() {
-  const [date, setDate] = useState<Date | null>(new Date());
   const [rate, setRate] = useState("");
   const [description, setDescription] = useState("");
   const [minutesEntries, setMinutesEntries] = useState<MinutesEntry[]>([
-    { date: new Date(), minutes: 0 },
+    { date: "", minutes: 0 },
   ]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  let navigate = useNavigate();
 
-    // Only change value to valid decimal number
+  const handleRateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
     if (/^\d*\.?\d{0,2}$/.test(value)) {
       setRate(value);
     }
   };
 
   const handleAddEntry = () => {
-    setMinutesEntries([...minutesEntries, { date: new Date(), minutes: 0 }]);
+    console.log("NEW ENTRY ADDED");
+    setMinutesEntries([...minutesEntries, { date: "", minutes: 0 }]);
   };
 
   const handleUpdateEntry = (
@@ -45,22 +45,28 @@ export default function Sheet() {
     setMinutesEntries(updatedEntries);
   };
 
-  const calculateCost = () => {
-    const cost = (((parseFloat(rate) || 0) * totalMinutes) / 60).toFixed(2);
-
-    return cost;
-  };
-
   const totalMinutes = minutesEntries.reduce(
     (sum, entry) => sum + entry.minutes,
     0
   );
 
+  const calculateCost = () => {
+    const cost = (((parseFloat(rate) || 0) * totalMinutes) / 60).toFixed(2);
+    return cost;
+  };
+
+  const handleEntriesSave = () => {
+    navigate("/sheetList");
+  };
+
   return (
     <div>
       <div className="flex justify-end">
         <div className="flex flex-col gap-2 m-4">
-          <button className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">
+          <button
+            onClick={handleEntriesSave}
+            className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer"
+          >
             Save & Exit Sheet
           </button>
           <button className="px-4 py-2 bg-green-500 text-white rounded cursor-pointer">
@@ -88,7 +94,7 @@ export default function Sheet() {
             type="number"
             step="0.01"
             value={rate}
-            onChange={handleChange}
+            onChange={handleRateChange}
             placeholder="Enter rate..."
           />
         </div>
@@ -108,10 +114,10 @@ export default function Sheet() {
             className="w-full flex justify-center items-center gap-4"
           >
             <label>Date:</label>
-            <DatePicker
-              className="text-center border border-black w-32 outline-none"
-              selected={entry.date}
-              onChange={(newDate) => handleUpdateEntry(index, "date", newDate)}
+            <input
+              type="date"
+              value={entry.date}
+              onChange={(e) => handleUpdateEntry(index, "date", e.target.value)}
             />
             <label>Minutes:</label>
             <input
