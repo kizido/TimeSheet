@@ -52,12 +52,19 @@ export default function Sheet() {
 
   return (
     <div>
+      <div className="flex justify-end">
+        <div className="flex flex-col gap-2 m-4">
+          <button className="px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">
+            Save & Exit Sheet
+          </button>
+          <button className="px-4 py-2 bg-green-500 text-white rounded cursor-pointer">
+            Logout
+          </button>
+        </div>
+      </div>
       <div className="w-full flex flex-col items-center gap-4 mt-8">
         <div className="w-full flex justify-center items-center relative">
           <h1 className="text-3xl font-semibold">Placeholder Sheet Title</h1>
-          <button className="absolute right-8 px-4 py-2 bg-blue-500 text-white rounded cursor-pointer">
-            Save & Exit Sheet
-          </button>
         </div>
         <div className="flex justify-center w-full">
           <textarea
