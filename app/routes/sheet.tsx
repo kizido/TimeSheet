@@ -1,11 +1,17 @@
 import { useState, type ChangeEvent } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import type { LoaderFunctionArgs } from "react-router";
+import { requireAuthCookie } from "~/auth";
 
 type MinutesEntry = {
   date: Date;
   minutes: number;
 };
+
+export async function loader({ request }: LoaderFunctionArgs) {
+    let userId = await requireAuthCookie(request);
+}
 
 export default function Sheet() {
   const [date, setDate] = useState<Date | null>(new Date());
