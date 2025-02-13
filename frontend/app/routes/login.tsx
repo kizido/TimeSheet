@@ -10,7 +10,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("/login", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         body: JSON.stringify({ username, password }),
         headers: { "Content-Type": "application/json" },
@@ -20,7 +20,7 @@ export default function Login() {
         const { message } = await response.json();
         setError(message || "Login failed");
       } else {
-        navigate("/sheet");
+        navigate("/sheetList");
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
