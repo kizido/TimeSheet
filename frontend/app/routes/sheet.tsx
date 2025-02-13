@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from "react";
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import type { LoaderFunctionArgs } from "react-router";
 import { requireAuthCookie } from "~/auth";
 
@@ -108,11 +108,11 @@ export default function Sheet() {
             className="w-full flex justify-center items-center gap-4"
           >
             <label>Date:</label>
-            {/* <DatePicker
+            <DatePicker
               className="text-center border border-black w-32 outline-none"
               selected={entry.date}
               onChange={(newDate) => handleUpdateEntry(index, "date", newDate)}
-            /> */}
+            />
             <label>Minutes:</label>
             <input
               className="w-24 border border-black text-center"
