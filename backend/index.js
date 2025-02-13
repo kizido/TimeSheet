@@ -1,13 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { Pool } = require("pg");
-const bcrypt = require("bcrypt");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const app = express();
 const port = process.env.PORT || 5000;
-const uri = process.env.MONGODB_URI;
 
 // const pool = new Pool({
 //   connectionString: process.env.DATABASE_URL,
