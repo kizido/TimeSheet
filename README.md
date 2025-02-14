@@ -11,14 +11,17 @@ Follow these steps to set up the project locally:
 ```bash
 git clone [https://github.com/kizido/TimeSheet.git](https://github.com/kizido/TimeSheet.git)
 cd TimeSheet
+```
 
 ### 2. Setup the Frontend
 Move to the frontend directory
 ```bash
 cd frontend
+```
 Install Dependencies
 ```bash
 npm install
+```
 Run the Client
 ```bash
 npm run dev
