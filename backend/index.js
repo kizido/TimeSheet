@@ -5,10 +5,11 @@ const cookieParser = require("cookie-parser");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const app = express();
+app.set("trust proxy", 1);
 const port = process.env.PORT || 5000;
 
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN,
+  origin: [process.env.CORS_ORIGIN_DEV, process.env.CORS_ORIGIN_PROD],
   methods: "GET,POST,PUT,DELETE,OPTIONS",
   credentials: true,
 };
