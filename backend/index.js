@@ -1,15 +1,23 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(express.json());
+const corsOptions = {
+  origin: "http://localhost:5173",
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  credentials: true,
+};
 
-// Basic routes
+app.use(cors(corsOptions));
+
+app.use(express.json());
+app.use(cookieParser());
+
 app.get("/", (req, res) => {
   res.send("Timesheet API Running");
 });
@@ -41,7 +49,6 @@ app.get("/testdb", async (req, res) => {
   client.close();
 });
 
-// Import and use authentication routes
 const authRoutes = require("./authRoutes");
 app.use(authRoutes);
 
