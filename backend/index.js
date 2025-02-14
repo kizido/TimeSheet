@@ -50,7 +50,10 @@ app.get("/testdb", async (req, res) => {
 });
 
 const authRoutes = require("./authRoutes");
+const sheetsRoutes = require("./sheetsRoutes");
+
 app.use(authRoutes);
+app.use(sheetsRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

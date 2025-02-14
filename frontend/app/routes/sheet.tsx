@@ -1,27 +1,33 @@
 import { useState, type ChangeEvent } from "react";
-import { useNavigate } from "react-router";
-// import type { LoaderFunctionArgs } from "react-router";
-// import { requireAuthCookie } from "~/auth";
-
+import { useNavigate, useLocation } from "react-router";
 
 type MinutesEntry = {
   date: string;
   minutes: number;
 };
 
-// export async function loader({ request }: LoaderFunctionArgs) {
-//     let userId = await requireAuthCookie(request);
-// }
-
 export default function Sheet() {
-  const [rate, setRate] = useState("");
-  const [description, setDescription] = useState("");
-  const [minutesEntries, setMinutesEntries] = useState<MinutesEntry[]>([
-    { date: "", minutes: 0 },
-  ]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  let navigate = useNavigate();
+  const existingSheet = location.state?.sheet;
+  const initialSheetName =
+    (existingSheet && existingSheet.sheetName) ||
+    location.state?.sheetName ||
+    "";
 
+  const sheetId = existingSheet?._id || null;
+  const [sheetName, setSheetName] = useState(initialSheetName);
+
+  const [rate, setRate] = useState(existingSheet?.rate || "");
+  const [description, setDescription] = useState(
+    existingSheet?.description || ""
+  );
+  const [minutesEntries, setMinutesEntries] = useState<MinutesEntry[]>(
+    existingSheet?.minutesEntries || [{ date: "", minutes: 0 }]
+  );
+
+  // Allow only numeric input with up to 2 decimals
   const handleRateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*\.?\d{0,2}$/.test(value)) {
@@ -30,7 +36,6 @@ export default function Sheet() {
   };
 
   const handleAddEntry = () => {
-    console.log("NEW ENTRY ADDED");
     setMinutesEntries([...minutesEntries, { date: "", minutes: 0 }]);
   };
 
@@ -55,8 +60,37 @@ export default function Sheet() {
     return cost;
   };
 
-  const handleEntriesSave = () => {
-    navigate("/sheetList");
+  // Save the sheet by sending data to the backend.
+  const handleEntriesSave = async () => {
+    if (!sheetName) {
+      alert("Please provide a sheet name");
+      return;
+    }
+    const sheetData = {
+      sheetName,
+      description,
+      rate,
+      minutesEntries,
+      totalMinutes,
+      totalCost: calculateCost(),
+    };
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const response = await fetch(apiUrl + `/sheets/${sheetId}`, {
+        method: "PUT",
+        body: JSON.stringify(sheetData),
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const { message } = await response.json();
+        alert(message || "Failed to save sheet");
+      } else {
+        navigate("/sheetList");
+      }
+    } catch (err) {
+      alert("Error saving sheet");
+    }
   };
 
   return (
@@ -75,8 +109,17 @@ export default function Sheet() {
         </div>
       </div>
       <div className="w-full flex flex-col items-center gap-4 mt-8">
-        <div className="w-full flex justify-center items-center relative">
-          <h1 className="text-3xl font-semibold">Placeholder Sheet Title</h1>
+        <div className="w-full flex justify-center items-center">
+          <h1 className="text-3xl font-semibold">{sheetName || "New Sheet"}</h1>
+        </div>
+        <div className="flex justify-center w-full">
+          <input
+            type="text"
+            placeholder="Sheet Name"
+            value={sheetName}
+            onChange={(e) => setSheetName(e.target.value)}
+            className="border border-black p-1 mb-2"
+          />
         </div>
         <div className="flex justify-center w-full">
           <textarea
@@ -136,8 +179,6 @@ export default function Sheet() {
             />
           </div>
         ))}
-
-        {/* Add Entry Button */}
         <button
           onClick={handleAddEntry}
           className="mt-4 px-4 py-2 bg-green-500 text-white rounded-3xl cursor-pointer"
