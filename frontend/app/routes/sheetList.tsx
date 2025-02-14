@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, type LoaderFunctionArgs } from "react-router";
+// import { requireAuthCookie } from "~/auth";
 
 type Sheet = {
   _id: string;
@@ -10,6 +11,10 @@ type Sheet = {
   totalMinutes: number;
   totalCost: string;
 };
+
+// export async function loader({ request }: LoaderFunctionArgs) {
+//   let userId = await requireAuthCookie(request);
+// }
 
 export default function SheetList() {
   const [sheets, setSheets] = useState<Sheet[]>([]);
@@ -64,7 +69,7 @@ export default function SheetList() {
           sheetName: newSheetName,
           description: "",
           rate: "",
-          minutesEntries: [ defaultMinutesEntry ],
+          minutesEntries: [defaultMinutesEntry],
           totalMinutes: 0,
           totalCost: "0.00",
         }),
@@ -94,10 +99,30 @@ export default function SheetList() {
     setNewSheetName("");
   };
 
+  const handleLogout = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    try {
+      const response = await fetch(apiUrl + "/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (response.ok) {
+        navigate("/");
+      } else {
+        console.error("Failed to logout");
+      }
+    } catch (error) {
+      console.error("Error logging out", error);
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-end mr-4 mt-4">
-        <button className="px-4 py-2 bg-green-500 text-white rounded cursor-pointer">
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-green-500 text-white rounded cursor-pointer"
+        >
           Logout
         </button>
       </div>

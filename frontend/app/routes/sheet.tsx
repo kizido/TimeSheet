@@ -93,6 +93,23 @@ export default function Sheet() {
     }
   };
 
+  const handleLogout = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+    try {
+      const response = await fetch(apiUrl + "/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (response.ok) {
+        navigate("/");
+      } else {
+        console.error("Failed to logout");
+      }
+    } catch (error) {
+      console.error("Error logging out", error);
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-end">
@@ -103,7 +120,10 @@ export default function Sheet() {
           >
             Save & Exit Sheet
           </button>
-          <button className="px-4 py-2 bg-green-500 text-white rounded cursor-pointer">
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-green-500 text-white rounded cursor-pointer"
+          >
             Logout
           </button>
         </div>

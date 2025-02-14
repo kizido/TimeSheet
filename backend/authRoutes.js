@@ -80,6 +80,15 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+  res.status(200).json({ message: "Logged out successfully." });
+});
+
 router.get("/protected", (req, res) => {
   const token = req.cookies.token;
   if (!token) {
