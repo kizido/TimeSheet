@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, type LoaderFunctionArgs } from "react-router";
-// import { requireAuthCookie } from "~/auth";
+import { redirect, useNavigate, type ClientLoaderFunctionArgs, type LoaderFunctionArgs } from "react-router";
 
 type Sheet = {
   _id: string;
@@ -12,9 +11,21 @@ type Sheet = {
   totalCost: string;
 };
 
-// export async function loader({ request }: LoaderFunctionArgs) {
-//   let userId = await requireAuthCookie(request);
-// }
+export async function clientLoader({ request }: ClientLoaderFunctionArgs) {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const response = await fetch(apiUrl + "/protected", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw redirect("/");
+  }
+  const data = await response.json();
+  return data.user || "No user found in cookie";
+}
 
 export default function SheetList() {
   const [sheets, setSheets] = useState<Sheet[]>([]);

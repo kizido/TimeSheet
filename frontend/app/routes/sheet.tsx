@@ -1,10 +1,26 @@
 import { useState, type ChangeEvent } from "react";
-import { useNavigate, useLocation } from "react-router";
+import { useNavigate, useLocation, type ClientLoaderFunctionArgs, redirect } from "react-router";
 
 type MinutesEntry = {
   date: string;
   minutes: number;
 };
+
+export async function clientLoader({ request }: ClientLoaderFunctionArgs) {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const response = await fetch(apiUrl + "/protected", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw redirect("/");
+  }
+  const data = await response.json();
+  return data.user || "No user found in cookie";
+}
 
 export default function Sheet() {
   const navigate = useNavigate();
